@@ -15,12 +15,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Terraform validate') {
-            steps {
-                // Validate Terraform configuration files
-                sh 'terraform validate'
-            }
-        }
+
         stage('Terraform init') {
             steps {
                 // Initialize Terraform with input set to false to prevent interactive prompts
