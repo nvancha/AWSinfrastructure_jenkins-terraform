@@ -8,33 +8,20 @@ pipeline {
         }
         stage('Terraform init') {
             steps {
-                script {
-                    def result = sh(script: 'terraform init -no-color', returnStatus: true)
-                    if (result != 0) {
-                        error "Terraform init failed with status code ${result}. Check the logs for more details."
-                    }
-                }
+                sh 'terraform init -no-color -input=false'
             }
         }
         stage('Terraform plan') {
             steps {
-                script {
-                    def result = sh(script: 'terraform plan -out=planfile -no-color', returnStatus: true)
-                    if (result != 0) {
-                        error "Terraform plan failed with status code ${result}. Check the logs for more details."
-                    }
-                }
+                sh 'terraform plan -out=planfile -no-color -input=false'
             }
         }
         stage('Terraform apply') {
             steps {
-                script {
-                    def result = sh(script: 'terraform apply -auto-approve -no-color planfile', returnStatus: true)
-                    if (result != 0) {
-                        error "Terraform apply failed with status code ${result}. Check the logs for more details."
-                    }
-                }
+                sh 'terraform apply -auto-approve -no-color -input=false'
             }
         }
     }
 }
+    
+
