@@ -1,33 +1,39 @@
 pipeline {
     agent any
     stages {
-        stage('Verify Terraform') {
-            steps {
-                // Check Terraform version to ensure it's installed
-                sh 'terraform --version'
-                // Print the current directory and list its contents for debugging
-                sh 'pwd'
-                sh 'ls -al'
-            }
-        }
         stage('git checkout') {
             steps {
                 checkout scm
             }
         }
-        
         stage('Terraform init') {
             steps {
-                // Initialize Terraform with input set to false to prevent interactive prompts
-                sh 'terraform init -no-color -input=false'
+                script {
+                    def result = sh(script: 'terraform init -no-color', returnStatus: true)
+                    if (result != 0) {
+                        error "Terraform init failed with status code ${result}. Check the logs for more details."
+                    }
+                }
+            }
+        }
+        stage('Terraform plan') {
+            steps {
+                script {
+                    def result = sh(script: 'terraform plan -out=planfile -no-color', returnStatus: true)
+                    if (result != 0) {
+                        error "Terraform plan failed with status code ${result}. Check the logs for more details."
+                    }
+                }
             }
         }
         stage('Terraform apply') {
             steps {
-                // Generate a plan file
-                sh 'terraform plan -out=planfile'
-                // Apply Terraform configurations using the plan file, with detailed logging to a file
-                sh 'TF_LOG=DEBUG terraform apply -auto-approve -no-color planfile | tee terraform.log'
+                script {
+                    def result = sh(script: 'terraform apply -auto-approve -no-color planfile', returnStatus: true)
+                    if (result != 0) {
+                        error "Terraform apply failed with status code ${result}. Check the logs for more details."
+                    }
+                }
             }
         }
     }
