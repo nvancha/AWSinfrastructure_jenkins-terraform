@@ -10,12 +10,12 @@ pipeline {
                 sh 'ls -al'
             }
         }
-        stage('git checkout') {
+        stage('Git Checkout') {
             steps {
                 checkout scm
             }
         }
-
+        
         stage('Terraform init') {
             steps {
                 // Initialize Terraform with input set to false to prevent interactive prompts
@@ -24,8 +24,10 @@ pipeline {
         }
         stage('Terraform apply') {
             steps {
-                // Apply Terraform configurations with detailed logging and input set to false
-                sh 'TF_LOG=DEBUG terraform apply -auto-approve -no-color -input=false'
+                // Generate a plan file
+                sh 'terraform plan -out=planfile'
+                // Apply Terraform configurations using the plan file, with detailed logging to a file
+                sh 'TF_LOG=DEBUG terraform apply -auto-approve -no-color planfile | tee terraform.log
             }
         }
     }
