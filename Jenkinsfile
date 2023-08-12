@@ -1,9 +1,18 @@
 pipeline {
     agent any
+
     stages {
         stage('git checkout') {
             steps {
                 checkout scm
+            }
+        }
+        stage('Debugging') {
+            steps {
+                // print the current directory to ensure we are where we expect
+                sh 'pwd'
+                // list the files to ensure all terraform files are present
+                sh 'ls -al'
             }
         }
         stage('Check Terraform Version') {
@@ -13,20 +22,26 @@ pipeline {
         }
         stage('Terraform init') {
             steps {
-                sh 'terraform init -no-color -input=false'
+                // We assume your terraform scripts are in the root of your repository. 
+                // If they are inside a sub-directory, you should change '.' to the relative path of that directory.
+                dir('.') {
+                    sh 'terraform init -no-color -input=false'
+                }
             }
         }
         stage('Terraform plan') {
             steps {
-                sh 'terraform plan -out=planfile -no-color -input=false'
+                dir('.') {
+                    sh 'terraform plan -out=planfile -no-color -input=false'
+                }
             }
         }
         stage('Terraform apply') {
             steps {
-                sh 'terraform apply -auto-approve -no-color -input=false'
+                dir('.') {
+                    sh 'terraform apply -auto-approve -no-color -input=false'
+                }
             }
         }
     }
 }
-    
-
