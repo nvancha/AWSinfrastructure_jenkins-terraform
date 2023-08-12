@@ -6,6 +6,11 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Check Terraform Version') {
+            steps {
+                sh 'terraform --version'
+            }
+        }
         stage('Terraform init') {
             steps {
                 sh 'terraform init -no-color -input=false'
