@@ -11,9 +11,6 @@ This project uses Terraform for infrastructure as code (IaC) to define and provi
 - [Usage](#usage)
 - [Repository Structure](#repository-structure)
 - [Contributing](#contributing)
-- [License](#license)
-- [Authors](#authors)
-- [Acknowledgments](#acknowledgments)
 
 ## Prerequisites
 
